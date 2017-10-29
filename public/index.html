@@ -3,15 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Chat</title>
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body>
-  <h1>Welcome to the chat!</h1>
-  <div class="message-list"></div>
-  <form id="chat-form">
-    <input type="text" name="text" placeholder="Message">
-    <button type="submit">Send</button>
-  </form>
-  <button id="send-location">Send Location</button>
+<body class="chat">
+  <div class="chat__sidebar">
+    <h3>Peaple</h3>
+    <div id="users"></div>
+  </div>
+  <div class="chat__main">
+    <div class="chat__messages"></div>
+    <div class="chat__footer">
+      <form id="chat-form">
+        <input autofocus autocomplete="off" type="text" name="text" placeholder="Message">
+        <button type="submit">Send</button>
+      </form>
+      <button id="send-location">Send location</button>
+    </div>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/index.js"></script>
 </body>

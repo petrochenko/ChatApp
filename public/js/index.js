@@ -1,5 +1,5 @@
 let socket = io();
-const messageList = document.querySelector('.message-list');
+const messageList = document.querySelector('.chat__messages');
 let createNewMessage = (message) => {
   let date = new Date(message.createdAt);
   let newMessage = document.createElement("div");
@@ -12,6 +12,7 @@ let createNewMessage = (message) => {
     <div class="message-item-from">From: ${message.from}</div>
     <div class="message-item-body">Message:</div>
     <div class="message-item-body">${message.text}</div>
+    <br><hr><br><br>
   `;
   return newMessage;
 };
@@ -29,6 +30,7 @@ let createNewLocationMessage = (message) => {
     <div class="message-item-body">Location: 
       <a href="https://www.google.com/maps?q=${message.latitude},${message.longitude}" target="_blank">look at the map</a>
     </div>
+    <br><hr><br><br>
   `;
   return newMessage;
 };
@@ -53,6 +55,7 @@ socket.on('newLocationMessage', (message) => {
 
 const chatForm = document.querySelector('#chat-form');
 const locationBtn = document.querySelector('#send-location');
+const footer = document.querySelector('.chat__footer');
 
 chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -66,7 +69,10 @@ chatForm.addEventListener('submit', (event) => {
   }
   socket.emit('createMessage',
     message,
-    data => console.log('Got it.', data));
+    data => {
+      elements['text'].value = '';
+      scrollTo(footer);
+    });
 });
 
 locationBtn.addEventListener('click', (event) => {
@@ -74,12 +80,24 @@ locationBtn.addEventListener('click', (event) => {
     return alert('Geolocation not supported by your browser.');
   }
 
+  locationBtn.disabled = true;
+  locationBtn.innerText = 'Sending location...';
+
   navigator.geolocation.getCurrentPosition((position) => {
+    locationBtn.disabled = false;
+    locationBtn.innerText = 'Send location';
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
+    scrollTo(footer);
   }, () => {
+    locationBtn.disabled = true;
+    locationBtn.innerText = 'Sending location...';
     alert('Unable to fetch location.');
   });
 });
+
+function scrollTo(el) {
+  el.scrollIntoView({block: 'start', behavior: 'smooth'});
+}
