@@ -6,8 +6,7 @@ let createNewMessage = (message) => {
   newMessage.setAttribute('class', 'message-item');
   newMessage.innerHTML = `
     <div class="message-item-date">
-      ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} / 
-      ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}
+      ${moment(message.createdAt).format('DD-MM-YYYY / h:mm:ss a')}
     </div>
     <div class="message-item-from">From: ${message.from}</div>
     <div class="message-item-body">Message:</div>
@@ -23,8 +22,7 @@ let createNewLocationMessage = (message) => {
   newMessage.setAttribute('class', 'message-item');
   newMessage.innerHTML = `
     <div class="message-item-date">
-      ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} / 
-      ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}
+     ${moment(message.createdAt).format('DD-MM-YYYY / h:mm:ss a')}
     </div>
     <div class="message-item-from">From: ${message.from}</div>
     <div class="message-item-body">Location: 
@@ -71,7 +69,7 @@ chatForm.addEventListener('submit', (event) => {
     message,
     data => {
       elements['text'].value = '';
-      scrollTo(footer);
+      scrollTo(messageList);
     });
 });
 
@@ -90,7 +88,7 @@ locationBtn.addEventListener('click', (event) => {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
-    scrollTo(footer);
+    scrollTo(messageList);
   }, () => {
     locationBtn.disabled = true;
     locationBtn.innerText = 'Sending location...';
@@ -99,5 +97,5 @@ locationBtn.addEventListener('click', (event) => {
 });
 
 function scrollTo(el) {
-  el.scrollIntoView({block: 'start', behavior: 'smooth'});
+  el.scrollTop = el.scrollHeight;
 }
