@@ -11,7 +11,7 @@
     <div id="users"></div>
   </div>
   <div class="chat__main">
-    <div class="chat__messages"></div>
+    <ol class="chat__messages"></ol>
     <div class="chat__footer">
       <form id="chat-form">
         <input autofocus autocomplete="off" type="text" name="text" placeholder="Message">
@@ -20,8 +20,32 @@
       <button id="send-location">Send location</button>
     </div>
   </div>
+  <script id="message-template" type="x-tmpl-mustache">
+    <li class="message">
+      <div class="message__title">
+        <h4>{{from}}</h4>
+        <span>{{createdAt}}</span>
+      </div>
+      <div class="message__body">
+        {{text}}
+      </div>
+    </li>
+  </script>
+  <script id="location-message-template" type="x-tmpl-mustache">
+    <li class="message">
+      <div class="message__title">
+        <h4>{{from}}</h4>
+        <span>{{createdAt}}</span>
+      </div>
+      <div class="message__body">
+        <a href="https://www.google.com/maps?q={{latitude}},{{longitude}}"
+           target="_blank">look at the map</a>
+      </div>
+    </li>
+  </script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/libs/moment.js"></script>
+  <script src="/js/libs/mustache.js"></script>
   <script src="/js/index.js"></script>
 </body>
 </html>

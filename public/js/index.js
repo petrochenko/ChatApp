@@ -1,36 +1,15 @@
 let socket = io();
 const messageList = document.querySelector('.chat__messages');
 let createNewMessage = (message) => {
-  let date = new Date(message.createdAt);
-  let newMessage = document.createElement("div");
-  newMessage.setAttribute('class', 'message-item');
-  newMessage.innerHTML = `
-    <div class="message-item-date">
-      ${moment(message.createdAt).format('DD-MM-YYYY / h:mm:ss a')}
-    </div>
-    <div class="message-item-from">From: ${message.from}</div>
-    <div class="message-item-body">Message:</div>
-    <div class="message-item-body">${message.text}</div>
-    <br><hr><br><br>
-  `;
-  return newMessage;
+  message['createdAt'] = moment(message['createdAt']).format('DD-MM-YYYY / h:mm:ss a');
+  let template = document.getElementById('message-template').innerHTML;
+  return stringToDomObject(Mustache.render(template, message));
 };
 
 let createNewLocationMessage = (message) => {
-  let date = new Date(message.createdAt);
-  let newMessage = document.createElement("div");
-  newMessage.setAttribute('class', 'message-item');
-  newMessage.innerHTML = `
-    <div class="message-item-date">
-     ${moment(message.createdAt).format('DD-MM-YYYY / h:mm:ss a')}
-    </div>
-    <div class="message-item-from">From: ${message.from}</div>
-    <div class="message-item-body">Location: 
-      <a href="https://www.google.com/maps?q=${message.latitude},${message.longitude}" target="_blank">look at the map</a>
-    </div>
-    <br><hr><br><br>
-  `;
-  return newMessage;
+  message['createdAt'] = moment(message['createdAt']).format('DD-MM-YYYY / h:mm:ss a');
+  let template = document.getElementById('location-message-template').innerHTML;
+  return stringToDomObject(Mustache.render(template, message));
 };
 
 socket.on('connect', () => {
@@ -44,11 +23,13 @@ socket.on('disconnect', () => {
 socket.on('newMessage', (message) => {
   console.log('New message', message);
   messageList.append(createNewMessage(message));
+  scrollTo(messageList);
 });
 
 socket.on('newLocationMessage', (message) => {
   console.log('New Location message', message);
   messageList.append(createNewLocationMessage(message));
+  scrollTo(messageList);
 });
 
 const chatForm = document.querySelector('#chat-form');
@@ -69,7 +50,6 @@ chatForm.addEventListener('submit', (event) => {
     message,
     data => {
       elements['text'].value = '';
-      scrollTo(messageList);
     });
 });
 
@@ -88,13 +68,18 @@ locationBtn.addEventListener('click', (event) => {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
-    scrollTo(messageList);
   }, () => {
     locationBtn.disabled = true;
     locationBtn.innerText = 'Sending location...';
     alert('Unable to fetch location.');
   });
 });
+
+function stringToDomObject(string) {
+  let wrapper = document.createElement('div');
+  wrapper.innerHTML = string;
+  return wrapper.firstElementChild;
+}
 
 function scrollTo(el) {
   el.scrollTop = el.scrollHeight;
