@@ -23,13 +23,13 @@ socket.on('disconnect', () => {
 socket.on('newMessage', (message) => {
   console.log('New message', message);
   messageList.append(createNewMessage(message));
-  scrollTo(messageList);
+  scrollToBottom(messageList, 300);
 });
 
 socket.on('newLocationMessage', (message) => {
   console.log('New Location message', message);
   messageList.append(createNewLocationMessage(message));
-  scrollTo(messageList);
+  scrollToBottom(messageList, 300);
 });
 
 const chatForm = document.querySelector('#chat-form');
@@ -81,6 +81,16 @@ function stringToDomObject(string) {
   return wrapper.firstElementChild;
 }
 
-function scrollTo(el) {
-  el.scrollTop = el.scrollHeight;
+function scrollToBottom(el, timeDuration) {
+  if (el.offsetHeight >= el.scrollHeight) return;
+  let step = el.scrollHeight / (timeDuration / 15);
+  let count = el.scrollHeight;
+  let interval;
+  interval = setInterval(() => {
+    el.scrollTop += step;
+    count -= step;
+    if (count < 0) {
+      clearInterval(interval);
+    }
+  }, 15);
 }
