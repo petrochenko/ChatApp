@@ -17,11 +17,9 @@ let users = new Users();
 
 app.use(express.static(publicPath));
 
-  io.on('connection', (socket) => {
-  console.log('New user connected!');
-
+io.on('connection', (socket) => {
   socket.on('join', (params, callback) => {
-    if(!isRealString(params.name) || !isRealString(params.room)) {
+    if (!isRealString(params.name) || !isRealString(params.room)) {
       return callback('Name and room name are required.');
     }
 
@@ -37,19 +35,25 @@ app.use(express.static(publicPath));
   });
 
   socket.on('createMessage', (message, callback) => {
-    console.log('createMessage: ', message);
-    io.emit('newMessage', generateMessage(message.from, message.text));
+    let user = users.getUser(socket.id);
+    if (user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+    }
     callback('This is from the sever.');
   });
 
   socket.on('createLocationMessage', (coords) => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+    let user = users.getUser(socket.id);
+    if (user) {
+      io.to(user.room)
+        .emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+    }
   });
 
   socket.on('disconnect', () => {
     let user = users.removeUser(socket.id);
 
-    if(user) {
+    if (user) {
       io.to(user.room).emit('updateUserList', users.getUserList(user.room));
       io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left a room - ${user.room}`));
     }

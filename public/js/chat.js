@@ -11,8 +11,6 @@ socket.on('connect', () => {
       console.error(err);
       alert(err);
       window.location.href = '/';
-    } else {
-      console.log('No error');
     }
   });
 });
@@ -22,19 +20,15 @@ socket.on('disconnect', () => {
 });
 
 socket.on('updateUserList', (users) => {
-  console.log('Users', users);
-  console.log(createUserList(users));
   usersWrapper.innerHTML = createUserList(users);
 });
 
 socket.on('newMessage', (message) => {
-  console.log('New message', message);
   messageList.append(createNewMessage(message));
   scrollToBottom(messageList, 300);
 });
 
 socket.on('newLocationMessage', (message) => {
-  console.log('New Location message', message);
   messageList.append(createNewLocationMessage(message));
   scrollToBottom(messageList, 300);
 });
@@ -42,7 +36,7 @@ socket.on('newLocationMessage', (message) => {
 chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
   let elements = event.target.elements;
-  let message = {from: 'User'};
+  let message = {};
   for (let element of elements) {
     if (element.tagName === 'BUTTON') {
       continue;
